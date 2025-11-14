@@ -1,0 +1,30 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="/" hx-get="/" hx-target="#content" hx-push-url="true">My Website</a></h1>
+            <p>A simple site built with Go and htmx.</p>
+        </header>
+        <main id="content" hx-swap="innerHTML transition:true">
+            {{ if .Content }}
+                {{ template "content" . }}
+            {{ else }}
+                {{ template "index" . }}
+            {{ end }}
+        </main>
+        <footer>
+            <p>Powered by Go & htmx</p>
+        </footer>
+    </div>
+</body>
+</html>
+{{ end }}
