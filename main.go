@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/yuin/goldmark"
 )
@@ -59,6 +60,14 @@ func (s *server) routes() *http.ServeMux {
 	return mux
 }
 
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		log.Printf("%s %s %v", r.Method, r.RequestURI, time.Since(start))
+	})
+}
+
 func main() {
 	srv, err := newServer()
 	if err != nil {
@@ -66,7 +75,7 @@ func main() {
 	}
 
 	log.Println("Server starting on :8080")
-	if err := http.ListenAndServe(":8080", srv.routes()); err != nil {
+	if err := http.ListenAndServe(":8080", loggingMiddleware(srv.routes())); err != nil {
 		log.Fatal(err)
 	}
 }
