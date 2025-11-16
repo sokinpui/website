@@ -1,6 +1,19 @@
 {{ define "content" }}
-<article>
+<div class="content-layout">
+    {{ if .TOC }}
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            {{ range .TOC }}
+            <li class="toc-level-{{ .Level }}"><a href="#{{ .ID }}">{{ .Text }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+
+<article class="main-article">
     <h2>{{ .Title }}</h2>
     {{ .Content }}
 </article>
+</div>
 {{ end }}

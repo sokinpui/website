@@ -13,6 +13,7 @@ import (
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
@@ -38,6 +39,13 @@ type ViewData struct {
 	Content template.HTML
 	Blogs []string
 	Wikis []string
+	TOC     []Heading
+}
+
+type Heading struct {
+	Level int
+	Text  string
+	ID    string
 }
 
 type server struct {
@@ -168,11 +176,16 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 			return
 		}
 
+		var headings []Heading
 		var buf bytes.Buffer
 		md := goldmark.New(
+			goldmark.WithExtensions(
+				extension.GFM,
+			),
 			goldmark.WithParserOptions(
 				parser.WithASTTransformers(
 					util.Prioritized(&linkTransformer{}, 100),
+					util.Prioritized(&tocExtractor{Headings: &headings}, 200),
 				),
 			),
 		)
@@ -184,6 +197,7 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 		data := ViewData{
 			Title:   strings.ReplaceAll(fileName, "-", " "),
 			Content: template.HTML(buf.String()),
+			TOC:     headings,
 		}
 
 		templateName := "content"
@@ -211,6 +225,32 @@ func listFiles(fs embed.FS, dir string) ([]string, error) {
 		}
 	}
 	return files, nil
+}
+
+type tocExtractor struct {
+	Headings *[]Heading
+}
+
+func (t *tocExtractor) Transform(node *ast.Document, reader text.Reader, pc parser.Context) {
+	ast.Walk(node, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+		if !entering {
+			return ast.WalkContinue, nil
+		}
+		if heading, ok := n.(*ast.Heading); ok {
+			idStr := ""
+			if idAttr, ok := heading.AttributeString("id"); ok {
+				if idBytes, ok := idAttr.([]byte); ok {
+					idStr = string(idBytes)
+				}
+			}
+			*t.Headings = append(*t.Headings, Heading{
+				Level: heading.Level,
+				Text:  string(heading.Text(reader.Source())),
+				ID:    idStr,
+			})
+		}
+		return ast.WalkContinue, nil
+	})
 }
 
 type linkTransformer struct {

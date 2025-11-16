@@ -10,24 +10,22 @@
 </head>
 <body>
     <div class="container">
-        <div class="body-container">
-            <nav class="sidebar">
-                <ul>
-                    <li><a href="/" hx-get="/" hx-target="#content" hx-push-url="true">Home</a></li>
-                    <li><a href="/blog" hx-get="/blog" hx-target="#content" hx-push-url="true">Blog</a></li>
-                    <li><a href="/wiki" hx-get="/wiki" hx-target="#content" hx-push-url="true">Wiki</a></li>
-                </ul>
+        <header>
+            <nav>
+                <a href="/" hx-get="/" hx-target="#content" hx-push-url="true">Home</a>
+                <a href="/blog" hx-get="/blog" hx-target="#content" hx-push-url="true">Blog</a>
+                <a href="/wiki" hx-get="/wiki" hx-target="#content" hx-push-url="true">Wiki</a>
             </nav>
-            <main id="content" hx-swap="innerHTML transition:true">
-                {{ if .Content }}
-                    {{ template "content" . }}
-                {{ else if or .Blogs .Wikis }}
-                    {{ template "index" . }}
-                {{ else }}
-                    {{ template "home" . }}
-                {{ end }}
-            </main>
-        </div>
+        </header>
+        <main id="content" hx-swap="innerHTML transition:true">
+            {{ if .Content }}
+                {{ template "content" . }}
+            {{ else if or .Blogs .Wikis }}
+                {{ template "index" . }}
+            {{ else }}
+                {{ template "home" . }}
+            {{ end }}
+        </main>
     </div>
 </body>
 </html>
