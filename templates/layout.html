@@ -10,20 +10,24 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><a href="/" hx-get="/" hx-target="#content" hx-push-url="true">My Website</a></h1>
-            <p>A simple site built with Go and htmx.</p>
-        </header>
-        <main id="content" hx-swap="innerHTML transition:true">
-            {{ if .Content }}
-                {{ template "content" . }}
-            {{ else }}
-                {{ template "index" . }}
-            {{ end }}
-        </main>
-        <footer>
-            <p>Powered by Go & htmx</p>
-        </footer>
+        <div class="body-container">
+            <nav class="sidebar">
+                <ul>
+                    <li><a href="/" hx-get="/" hx-target="#content" hx-push-url="true">Home</a></li>
+                    <li><a href="/blog" hx-get="/blog" hx-target="#content" hx-push-url="true">Blog</a></li>
+                    <li><a href="/wiki" hx-get="/wiki" hx-target="#content" hx-push-url="true">Wiki</a></li>
+                </ul>
+            </nav>
+            <main id="content" hx-swap="innerHTML transition:true">
+                {{ if .Content }}
+                    {{ template "content" . }}
+                {{ else if or .Blogs .Wikis }}
+                    {{ template "index" . }}
+                {{ else }}
+                    {{ template "home" . }}
+                {{ end }}
+            </main>
+        </div>
     </div>
 </body>
 </html>

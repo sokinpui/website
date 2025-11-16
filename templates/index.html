@@ -1,4 +1,5 @@
 {{ define "index" }}
+{{ if .Blogs }}
 <div class="content-list">
     <h2>Blogs</h2>
     <ul>
@@ -9,6 +10,8 @@
         {{ end }}
     </ul>
 </div>
+{{ end }}
+{{ if .Wikis }}
 <div class="content-list">
     <h2>Wikis</h2>
     <ul>
@@ -19,4 +22,5 @@
         {{ end }}
     </ul>
 </div>
+{{ end }}
 {{ end }}
