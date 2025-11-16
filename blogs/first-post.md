@@ -1,3 +1,7 @@
+---
+title: My Awesome First Blog Post
+desc: A detailed look into the first blog post of the website.
+---
 # My First Blog Post
 
 This is the content of my very first blog post. It's written in Markdown.

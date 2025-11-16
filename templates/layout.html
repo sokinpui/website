@@ -4,7 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <title>
+    {{ if .Title }}
+    {{ .Title }} |
+    {{ end }}
+    My Website</title>
+    {{ if .Description }}
+    <meta name="description" content="{{ .Description }}">
+    {{ end }}
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="/static/js/htmx.min.js" defer></script>
 </head>

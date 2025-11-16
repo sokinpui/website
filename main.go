@@ -17,6 +17,7 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed blogs
@@ -35,17 +36,28 @@ var staticFS embed.FS
 var templateFS embed.FS
 
 type ViewData struct {
-	Title   string
-	Content template.HTML
-	Blogs []string
-	Wikis []string
-	TOC     []Heading
+	Title       string
+	Content     template.HTML
+	Blogs       []ContentItem
+	Wikis       []ContentItem
+	TOC         []Heading
+	Description string
+}
+
+type ContentItem struct {
+	FileName string
+	Title    string
 }
 
 type Heading struct {
 	Level int
 	Text  string
 	ID    string
+}
+
+type FrontMatter struct {
+	Title string `yaml:"title"`
+	Desc  string `yaml:"desc"`
 }
 
 type server struct {
@@ -122,7 +134,7 @@ func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) handleList(fsys embed.FS, dir string, listType string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		files, err := listFiles(fsys, dir)
+		items, err := listContentItems(fsys, dir)
 		if err != nil {
 			http.Error(w, "Failed to list files", http.StatusInternalServerError)
 			return
@@ -130,9 +142,11 @@ func (s *server) handleList(fsys embed.FS, dir string, listType string) http.Han
 
 		data := ViewData{}
 		if listType == "blogs" {
-			data.Blogs = files
+			data.Title = "Blogs"
+			data.Blogs = items
 		} else {
-			data.Wikis = files
+			data.Title = "Wikis"
+			data.Wikis = items
 		}
 
 		templateName := "layout"
@@ -144,6 +158,25 @@ func (s *server) handleList(fsys embed.FS, dir string, listType string) http.Han
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
+}
+
+func extractFrontMatter(markdown []byte) (FrontMatter, []byte, error) {
+	var fm FrontMatter
+	content := string(markdown)
+	parts := strings.SplitN(content, "---", 3)
+
+	if len(parts) < 3 || strings.TrimSpace(parts[0]) != "" {
+		return fm, markdown, nil
+	}
+
+	yamlBlock := strings.TrimSpace(parts[1])
+	markdownContent := []byte(strings.TrimSpace(parts[2]))
+
+	if yamlBlock == "" {
+		return fm, markdown, nil
+	}
+
+	return fm, markdownContent, yaml.Unmarshal([]byte(yamlBlock), &fm)
 }
 
 func (s *server) handleContent(contentFS embed.FS, contentType string) http.HandlerFunc {
@@ -168,12 +201,22 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 			return
 		}
 
-		filePath := path.Join(contentType, fileName+".md")
+		filePath := path.Join(contentType, fileName + ".md")
 
 		markdown, err := fs.ReadFile(contentFS, filePath)
 		if err != nil {
 			http.NotFound(w, r)
 			return
+		}
+
+		fm, markdownContent, err := extractFrontMatter(markdown)
+		if err != nil {
+			log.Printf("Error parsing front matter for %s: %v", filePath, err)
+		}
+
+		title := strings.ReplaceAll(fileName, "-", " ")
+		if fm.Title != "" {
+			title = fm.Title
 		}
 
 		var headings []Heading
@@ -189,15 +232,16 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 				),
 			),
 		)
-		if err := md.Convert(markdown, &buf); err != nil {
+		if err := md.Convert(markdownContent, &buf); err != nil {
 			http.Error(w, "Failed to render markdown", http.StatusInternalServerError)
 			return
 		}
 
 		data := ViewData{
-			Title:   strings.ReplaceAll(fileName, "-", " "),
+			Title:   title,
 			Content: template.HTML(buf.String()),
 			TOC:     headings,
+			Description: fm.Desc,
 		}
 
 		templateName := "content"
@@ -211,20 +255,43 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 	}
 }
 
-func listFiles(fs embed.FS, dir string) ([]string, error) {
-	entries, err := fs.ReadDir(dir)
+func listContentItems(fsys embed.FS, dir string) ([]ContentItem, error) {
+	entries, err := fsys.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
 
-	var files []string
+	var items []ContentItem
 	for _, entry := range entries {
-		if !entry.IsDir() {
-			name := strings.TrimSuffix(entry.Name(), ".md")
-			files = append(files, name)
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".md") {
+			continue
 		}
+
+		fileName := strings.TrimSuffix(entry.Name(), ".md")
+		filePath := path.Join(dir, entry.Name())
+
+		markdown, err := fs.ReadFile(fsys, filePath)
+		if err != nil {
+			log.Printf("Error reading file %s: %v", filePath, err)
+			continue
+		}
+
+		fm, _, err := extractFrontMatter(markdown)
+		if err != nil {
+			log.Printf("Error parsing front matter for %s: %v", filePath, err)
+		}
+
+		title := fileName
+		if fm.Title != "" {
+			title = fm.Title
+		}
+
+		items = append(items, ContentItem{
+			FileName: fileName,
+			Title:    title,
+		})
 	}
-	return files, nil
+	return items, nil
 }
 
 type tocExtractor struct {

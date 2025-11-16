@@ -1,3 +1,7 @@
+---
+title: The Initial Wiki Page
+desc: Documentation for the very first wiki page.
+---
 # First Wiki Page
 
 This is a page for the wiki.

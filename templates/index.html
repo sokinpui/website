@@ -5,7 +5,7 @@
     <h2>Blogs</h2>
     <ul>
         {{ range .Blogs }}
-        <li><a href="/blog/{{.}}" hx-get="/blog/{{.}}" hx-target="#content" hx-push-url="true">{{ . }}</a></li>
+        <li><a href="/blog/{{.FileName}}" hx-get="/blog/{{.FileName}}" hx-target="#content" hx-push-url="true">{{ .Title }}</a></li>
         {{ else }}
         <li>No blog posts yet.</li>
         {{ end }}
@@ -17,7 +17,7 @@
     <h2>Wikis</h2>
     <ul>
         {{ range .Wikis }}
-        <li><a href="/wiki/{{.}}" hx-get="/wiki/{{.}}" hx-target="#content" hx-push-url="true">{{ . }}</a></li>
+        <li><a href="/wiki/{{.FileName}}" hx-get="/wiki/{{.FileName}}" hx-target="#content" hx-push-url="true">{{ .Title }}</a></li>
         {{ else }}
         <li>No wiki pages yet.</li>
         {{ end }}
