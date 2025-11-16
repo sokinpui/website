@@ -72,6 +72,12 @@ ul {
     text-transform: capitalize;
 }
 
+/* Wrapper to constrain content to a readable width and center it */
+.readable-width-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 /* HTMX transitions */
 #content.htmx-swapping {
     opacity: 0;
