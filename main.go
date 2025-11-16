@@ -24,6 +24,9 @@ var blogFS embed.FS
 //go:embed wikis
 var wikiFS embed.FS
 
+//go:embed assets
+var assetsFS embed.FS
+
 //go:embed static
 var staticFS embed.FS
 
@@ -56,6 +59,9 @@ func (s *server) routes() *http.ServeMux {
 
 	staticServer := http.FileServer(http.FS(staticFS))
 	mux.Handle("/static/", staticServer)
+
+	assetsServer := http.FileServer(http.FS(assetsFS))
+	mux.Handle("/assets/", assetsServer)
 
 	mux.HandleFunc("/", s.handleIndex)
 	mux.HandleFunc("/blog", s.handleList(blogFS, "blogs", "blogs"))
@@ -216,20 +222,27 @@ func (t *linkTransformer) Transform(node *ast.Document, reader text.Reader, pc p
 			return ast.WalkContinue, nil
 		}
 
-		if link, ok := n.(*ast.Link); ok {
-			dest := string(link.Destination)
+		switch v := n.(type) {
+		case *ast.Link:
+			dest := string(v.Destination)
 			if strings.HasSuffix(dest, ".md") && !strings.HasPrefix(dest, "http") {
 				if strings.Contains(dest, "wikis/") {
 					base := path.Base(dest)
 					fileName := strings.TrimSuffix(base, ".md")
-					link.Destination = []byte("/wiki/" + fileName)
+					v.Destination = []byte("/wiki/" + fileName)
 				} else if strings.Contains(dest, "blogs/") {
 					base := path.Base(dest)
 					fileName := strings.TrimSuffix(base, ".md")
-					link.Destination = []byte("/blog/" + fileName)
+					v.Destination = []byte("/blog/" + fileName)
 				}
 			}
+		case *ast.Image:
+			dest := string(v.Destination)
+			if !strings.HasPrefix(dest, "http") && !path.IsAbs(dest) {
+				v.Destination = []byte(path.Join("/", dest))
+			}
 		}
+
 		return ast.WalkContinue, nil
 	})
 }

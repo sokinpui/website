@@ -10,4 +10,4 @@ Here is some `code` for you.
 
 [to wiki](../wikis/first-wiki.md)
 
-![asdfas](images.png)
+![](assets/img.png)
