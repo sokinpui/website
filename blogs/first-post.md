@@ -1,5 +1,5 @@
 ---
-title: first post
+title: first post 1
 desc: A detailed look into the first blog post of the website.
 ---
 
