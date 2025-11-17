@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
@@ -225,6 +226,9 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 		var buf bytes.Buffer
 		md := goldmark.New(
 			goldmark.WithExtensions(
+				highlighting.NewHighlighting(
+					highlighting.WithStyle("github"),
+				),
 				extension.GFM,
 			),
 			goldmark.WithParserOptions(

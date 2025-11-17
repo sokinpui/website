@@ -4,6 +4,7 @@
     --link-color: #007bff;
     --border-color: #eee;
     --header-bg: #f8f9fa;
+    --code-bg: #f6f8fa;
 }
 
 body {
@@ -102,3 +103,36 @@ ul {
 .toc-level-4 { padding-left: 3em; }
 .toc-level-5 { padding-left: 4em; }
 .toc-level-6 { padding-left: 5em; }
+
+/* Code block styling */
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: var(--fontStack-monospace, ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace);
+  font-size: 12px;
+  word-wrap: normal;
+}
+
+
+.code-block-wrapper {
+    position: relative;
+    margin-bottom: 1em;
+}
+
+.copy-code-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.code-block-wrapper:hover .copy-code-button {
+    opacity: 1;
+}
