@@ -104,15 +104,6 @@ ul {
 .toc-level-5 { padding-left: 4em; }
 .toc-level-6 { padding-left: 5em; }
 
-/* Code block styling */
-.markdown-body pre {
-  margin-top: 0;
-  margin-bottom: 0;
-  font-family: var(--fontStack-monospace, ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace);
-  font-size: 12px;
-  word-wrap: normal;
-}
-
 
 .code-block-wrapper {
     position: relative;
