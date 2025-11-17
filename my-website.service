@@ -1,0 +1,11 @@
+[Unit]
+Description=My Go Website
+After=network.target
+
+[Service]
+WorkingDirectory=/home/<username>/website
+ExecStart=/home/<username>/website/website.o
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
