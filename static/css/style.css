@@ -80,10 +80,16 @@ a:hover {
     margin: 0 auto;
 }
 
-/* HTMX transitions */
+/* HTMX transitions for fade-in and fade-out */
+#content {
+    transition: opacity 200ms ease-in;
+}
 #content.htmx-swapping {
     opacity: 0;
     transition: opacity 200ms ease-out;
+}
+#content.htmx-settling {
+    opacity: 0;
 }
 
 .toc {
