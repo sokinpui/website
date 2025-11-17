@@ -49,7 +49,7 @@ a:hover {
     text-decoration: underline;
 }
 
-ul {
+.content-list ul {
     list-style-type: none;
     padding-left: 0;
 }
@@ -95,6 +95,7 @@ ul {
 }
 
 .toc ul {
+    list-style-type: none;
     padding-left: 20px;
 }
 
