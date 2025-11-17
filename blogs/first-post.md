@@ -1,6 +1,6 @@
 ---
-title: first post 1
-desc: A detailed look into the first blog post of the website.
+title: first post-1
+1esc: A detailed look into the first blog post of the website.
 ---
 
 # My First Blog Post
