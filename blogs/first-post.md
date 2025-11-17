@@ -1,5 +1,5 @@
 ---
-title: first post-1
+title: 1
 1esc: A detailed look into the first blog post of the website.
 ---
 
