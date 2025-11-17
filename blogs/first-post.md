@@ -1,18 +1,54 @@
 ---
-title: 1
+title: first updates
 1esc: A detailed look into the first blog post of the website.
 ---
 
-# My First Blog Post
+# test with different markdown syntax
 
-This is the content of my very first blog post. It's written in Markdown.
+## two
 
-- It's easy to write.
-- It's clean.
-- It will be converted to HTML by the Go backend.
+### three
 
-Here is some `code` for you.
+#### four
 
-[to wiki](../wikis/first-wiki.md)
+##### five
 
-![](assets/img.png)
+###### six
+
+This is a **bold** text.
+
+this is an _italic_ text.
+
+this is ~~strikethrough~~ text.
+
+this is `inline code`.
+
+this is bold and italic text **_combined_**.
+
+Here is a [link](https://example.com) to an example website.
+
+Here is an image:
+
+![alt text](../assets/img.png)
+
+Here is a code block:
+
+```python
+def hello_world():
+    print("Hello, world!")
+
+hello_world()
+
+```
+
+Here is a list:
+
+- Item 1
+- Item 2
+- Item 3
+
+> This is a blockquote.
+
+Here is a horizontal rule:
+
+---
