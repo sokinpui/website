@@ -20,8 +20,8 @@ server {
   server_name localhost;
 
   # SSL certificate configuration
-  ssl_certificate /path/to/your/localhost+2.pem; # Or localhost.crt
-  ssl_certificate_key /path/to/your/localhost+2-key.pem; # Or localhost.key
+  ssl_certificate /path/to/your/localhost.crt;
+  ssl_certificate_key /path/to/your/localhost.key;
 
   # Recommended SSL protocols
   ssl_protocols TLSv1.2 TLSv1.3;
