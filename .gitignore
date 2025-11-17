@@ -1,2 +1,5 @@
 .obsidian/
 website.o
+localhost.crt
+localhost.key
+
