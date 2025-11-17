@@ -106,8 +106,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Server starting on :8080")
-	if err := http.ListenAndServe(":8080", loggingMiddleware(srv.routes())); err != nil {
+	var port string = ":12352"
+
+	log.Println("Server starting on port", port)
+	if err := http.ListenAndServe(port, loggingMiddleware(srv.routes())); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -201,7 +203,7 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 			return
 		}
 
-		filePath := path.Join(contentType, fileName + ".md")
+		filePath := path.Join(contentType, fileName+".md")
 
 		markdown, err := fs.ReadFile(contentFS, filePath)
 		if err != nil {
@@ -238,9 +240,9 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 		}
 
 		data := ViewData{
-			Title:   title,
-			Content: template.HTML(buf.String()),
-			TOC:     headings,
+			Title:       title,
+			Content:     template.HTML(buf.String()),
+			TOC:         headings,
 			Description: fm.Desc,
 		}
 
