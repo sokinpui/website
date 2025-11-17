@@ -22,7 +22,6 @@ Guide for setup this website:
 
 ```bash
 git clone https://github.com/sokinpui/website.git
-
 ```
 
 2. build the website
@@ -31,7 +30,6 @@ git clone https://github.com/sokinpui/website.git
 cd website
 go clean
 go build -o website.o
-
 ```
 
 # Setup Nginx for reverse proxy
@@ -66,7 +64,6 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 }
-
 ```
 
 3. Enable the server block
@@ -277,3 +274,20 @@ sudo systemctl reload nginx
 ---
 
 You should be able to access the website now
+
+---
+
+# Development
+
+Refresh the website:
+
+- Chrome, Firefox, or Edge (Windows/Linux): `Ctrl + Shift + R` or `Ctrl + F5`
+- Chrome, Firefox, or Edge (Mac): `Cmd + Shift + R`
+- Safari (Mac): `Cmd + Option + R`
+
+Restart the website:
+
+```bash
+cd ~/website
+./deploy.sh
+```
