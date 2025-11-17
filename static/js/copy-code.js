@@ -18,9 +18,9 @@ function initializeCopyCodeButtons(container) {
         wrapper.appendChild(copyButton);
 
         copyButton.addEventListener('click', () => {
-            const code = codeBlock.querySelector('code');
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(code.innerText).then(() => {
+            const codeElement = codeBlock.querySelector('code');
+            if (navigator.clipboard && codeElement) {
+                navigator.clipboard.writeText(codeElement.innerText).then(() => {
                     copyButton.textContent = 'Copied!';
                     setTimeout(() => {
                         copyButton.textContent = 'Copy';
