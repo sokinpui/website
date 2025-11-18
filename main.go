@@ -232,6 +232,7 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 				extension.GFM,
 			),
 			goldmark.WithParserOptions(
+				parser.WithAutoHeadingID(),
 				parser.WithASTTransformers(
 					util.Prioritized(&linkTransformer{}, 100),
 					util.Prioritized(&tocExtractor{Headings: &headings}, 200),
