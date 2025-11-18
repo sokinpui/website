@@ -63,13 +63,13 @@ type Heading struct {
 }
 
 type FrontMatter struct {
-	Title       string `yaml:"title"`
-	Desc        string `yaml:"desc"`
-	CreatedTime string `yaml:"created_time"`
+	Title     string `yaml:"title"`
+	Desc      string `yaml:"desc"`
+	CreatedAt string `yaml:"createdAt"`
 }
 
 type server struct {
-	templates *template.Template
+	templates    *template.Template
 	staticHashes map[string]string
 }
 
@@ -359,10 +359,10 @@ func listContentItems(fsys embed.FS, dir string) ([]ContentItem, error) {
 		}
 
 		modTime := info.ModTime()
-		if fm.CreatedTime != "" {
-			t, err := time.Parse(time.RFC3339, fm.CreatedTime)
+		if fm.CreatedAt != "" {
+			t, err := time.Parse(time.RFC3339, fm.CreatedAt)
 			if err != nil {
-				log.Printf("Error parsing created_time for %s: %v", entry.Name(), err)
+				log.Printf("Error parsing createdAt for %s: %v", entry.Name(), err)
 			} else {
 				modTime = t
 			}

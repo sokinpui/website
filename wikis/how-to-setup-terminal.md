@@ -1,6 +1,7 @@
 ---
 title: How to setup terminal environment
 desc: Documentation for setup terminal config for new *nix device
+createdAt: "2025-11-17T10:00:00Z"
 ---
 
 # Terminal setup

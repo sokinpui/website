@@ -45,7 +45,7 @@ func main() {
 	content := fmt.Sprintf(`---
 title: "%s"
 desc: ""
-created_time: "%s"
+createdAt: "%s"
 ---
 `, title, currentTime)
 

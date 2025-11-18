@@ -1,6 +1,7 @@
 ---
 title: How to Set Up Self-Signed SSL
 desc: how to create and configure self-signed SSL certificates for local development
+createdAt: "2025-11-16T10:00:00Z"
 ---
 
 # Use openSSL to create "self-signed" SSL certificates
