@@ -64,3 +64,14 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
 ```
+
+# Nvidia
+
+## Ubuntu
+
+get the nvidia drivers
+
+```bash
+sudo apt update
+sudo ubuntu-drivers autoinstall
+```
