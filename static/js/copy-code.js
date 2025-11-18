@@ -20,7 +20,6 @@ function initializeCopyCodeButtons(container) {
         copyButton.addEventListener('click', () => {
             if (navigator.clipboard) {
                 const textToCopy = codeBlock.textContent;
-                console.log("Copying text:", textToCopy);
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     copyButton.textContent = 'Copied!';
                     setTimeout(() => {
