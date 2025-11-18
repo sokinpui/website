@@ -16,6 +16,29 @@ Guide for setup this website:
 2. domain name
 3. SSL certificate
 
+# config cloudflare DNS
+
+1. Go to Cloudflare dashboard and select your domain
+2. Go to DNS settings
+3. Add two record with your domain name pointing to your VPS IP address
+
+- Type: A
+  - Name: @
+  - IPv4 address: your VPS IP address
+  - TTL: Auto
+  - Proxy status: Proxied
+
+- Type: A
+  - Name: www
+  - IPv4 address: your VPS IP address
+  - TTL: Auto
+  - Proxy status: Proxied
+
+4. SSL/TLS settings
+   - SSL/TLS encryption mode: Full (strict)
+   - Always use HTTPS: ON
+   - Automatic HTTPS Rewrites: ON
+
 # Build website binary
 
 1. Clone the repository to your VPS
