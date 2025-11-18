@@ -1,7 +1,9 @@
 #!/bin/bash
 
-echo "Pulling latest changes..."
+echo "resetting local changes..."
 git reset --hard origin/main
+
+echo "Pulling latest changes..."
 git pull origin main
 
 echo "Building the Go application..."
