@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -48,6 +49,7 @@ type ViewData struct {
 type ContentItem struct {
 	FileName string
 	Title    string
+	ModTime  time.Time
 }
 
 type Heading struct {
@@ -274,6 +276,12 @@ func listContentItems(fsys embed.FS, dir string) ([]ContentItem, error) {
 			continue
 		}
 
+		info, err := entry.Info()
+		if err != nil {
+			log.Printf("Error getting file info for %s: %v", entry.Name(), err)
+			continue
+		}
+
 		fileName := strings.TrimSuffix(entry.Name(), ".md")
 		filePath := path.Join(dir, entry.Name())
 
@@ -296,8 +304,14 @@ func listContentItems(fsys embed.FS, dir string) ([]ContentItem, error) {
 		items = append(items, ContentItem{
 			FileName: fileName,
 			Title:    title,
+			ModTime:  info.ModTime(),
 		})
 	}
+
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].ModTime.After(items[j].ModTime)
+	})
+
 	return items, nil
 }
 
