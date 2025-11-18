@@ -63,8 +63,9 @@ type Heading struct {
 }
 
 type FrontMatter struct {
-	Title string `yaml:"title"`
-	Desc  string `yaml:"desc"`
+	Title       string `yaml:"title"`
+	Desc        string `yaml:"desc"`
+	CreatedTime string `yaml:"created_time"`
 }
 
 type server struct {
@@ -357,6 +358,16 @@ func listContentItems(fsys embed.FS, dir string) ([]ContentItem, error) {
 			log.Printf("Error parsing front matter for %s: %v", filePath, err)
 		}
 
+		modTime := info.ModTime()
+		if fm.CreatedTime != "" {
+			t, err := time.Parse(time.RFC3339, fm.CreatedTime)
+			if err != nil {
+				log.Printf("Error parsing created_time for %s: %v", entry.Name(), err)
+			} else {
+				modTime = t
+			}
+		}
+
 		title := fileName
 		if fm.Title != "" {
 			title = fm.Title
@@ -365,7 +376,7 @@ func listContentItems(fsys embed.FS, dir string) ([]ContentItem, error) {
 		items = append(items, ContentItem{
 			FileName: fileName,
 			Title:    title,
-			ModTime:  info.ModTime(),
+			ModTime:  modTime,
 		})
 	}
 
