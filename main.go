@@ -2,12 +2,16 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"embed"
+	"encoding/hex"
 	"html/template"
 	"io/fs"
 	"log"
 	"net/http"
 	"path"
+	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -65,23 +69,65 @@ type FrontMatter struct {
 
 type server struct {
 	templates *template.Template
+	staticHashes map[string]string
 }
 
 func newServer() (*server, error) {
-	templates, err := template.ParseFS(templateFS, "templates/*.html")
+	s := &server{
+		staticHashes: make(map[string]string),
+	}
+
+	if err := s.hashStaticFiles(staticFS, "static"); err != nil {
+		return nil, err
+	}
+
+	funcMap := template.FuncMap{
+		"asset": func(path string) string {
+			if hashedPath, ok := s.staticHashes[path]; ok {
+				return hashedPath
+			}
+			return path
+		},
+	}
+
+	templates, err := template.New("").Funcs(funcMap).ParseFS(templateFS, "templates/*.html")
 	if err != nil {
 		return nil, err
 	}
-	return &server{
-		templates: templates,
-	}, nil
+	s.templates = templates
+
+	return s, nil
+}
+
+func (s *server) hashStaticFiles(fsys embed.FS, root string) error {
+	return fs.WalkDir(fsys, root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		content, err := fs.ReadFile(fsys, path)
+		if err != nil {
+			return err
+		}
+
+		hash := sha256.Sum256(content)
+		hashStr := hex.EncodeToString(hash[:])[:8]
+
+		ext := filepath.Ext(path)
+		base := strings.TrimSuffix(path, ext)
+		hashedPath := base + "." + hashStr + ext
+		s.staticHashes["/"+path] = "/" + hashedPath
+		return nil
+	})
 }
 
 func (s *server) routes() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	staticServer := http.FileServer(http.FS(staticFS))
-	mux.Handle("/static/", staticServer)
+	mux.Handle("/static/", s.handleStatic())
 
 	assetsServer := http.FileServer(http.FS(assetsFS))
 	mux.Handle("/assets/", assetsServer)
@@ -93,6 +139,21 @@ func (s *server) routes() *http.ServeMux {
 	mux.HandleFunc("/wiki/", s.handleContent(wikiFS, "wikis"))
 
 	return mux
+}
+
+var hashPattern = regexp.MustCompile(`^(.*)\.[0-9a-f]{8}(\..*)$`)
+
+func (s *server) handleStatic() http.Handler {
+	staticServer := http.FileServer(http.FS(staticFS))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		matches := hashPattern.FindStringSubmatch(r.URL.Path)
+		if len(matches) == 3 {
+			// It's a hashed file, rewrite the URL to the original
+			originalPath := matches[1] + matches[2]
+			r.URL.Path = originalPath
+		}
+		staticServer.ServeHTTP(w, r)
+	})
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {

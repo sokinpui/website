@@ -12,10 +12,10 @@
     {{ if .Description }}
     <meta name="description" content="{{ .Description }}">
     {{ end }}
-    <link rel="stylesheet" href="/static/css/github-markdown.css">
-    <link rel="stylesheet" href="/static/css/style.css">
-    <script src="/static/js/htmx.min.js" defer></script>
-    <script src="/static/js/copy-code.js" defer></script>
+    <link rel="stylesheet" href="{{ asset "/static/css/github-markdown.css" }}">
+    <link rel="stylesheet" href="{{ asset "/static/css/style.css" }}">
+    <script src="{{ asset "/static/js/htmx.min.js" }}" defer></script>
+    <script src="{{ asset "/static/js/copy-code.js" }}" defer></script>
 </head>
 <body>
     <div class="container">
