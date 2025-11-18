@@ -6,8 +6,10 @@ git reset --hard origin/main
 echo "Pulling latest changes..."
 git pull origin main
 
-echo "Building the Go application..."
+echo "Cleaning previous builds..."
 go clean
+
+echo "Building the Go application..."
 go build -o website.o
 
 echo "Restarting the application..."
