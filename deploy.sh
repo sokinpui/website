@@ -13,6 +13,6 @@ echo "Building the Go application..."
 go build -o website.o
 
 echo "Restarting the application..."
-systemctl restart my-website
+sudo systemctl restart my-website
 
 echo "Deployment successful!"
