@@ -3,10 +3,10 @@ Description=Webhook
 After=network.target
 
 [Service]
-User=stoplookhere
-Group=stoplookhere
-WorkingDirectory=/home/stoplookhere/website
-ExecStart=/usr/bin/webhook -hooks /home/stoplookhere/website/hooks.json -verbose
+User=<username>
+Group=<username>
+WorkingDirectory=/home/<username>/website
+ExecStart=/usr/bin/webhook -hooks /home/<username>/website/hooks.json -verbose
 
 # Restart policies
 Restart=always
