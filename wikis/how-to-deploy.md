@@ -114,107 +114,90 @@ echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; 
 
 # Setup auto git pull with webhook
 
-The `deploy.sh` script is included in the repository
-
-1. setup a simple program to listen webhook request
+## Setup webhook listener
 
 ```bash
-mkdir ~/github-webhook
-cd ~/github-webhook
-go mod init webhook
+sudo apt install git webhook
 ```
 
-2. Create `main.go` file
+modify `hooks.json` file in `website` directory:
 
-```go
-package main
+example:
 
-import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"os"
-	"os/exec"
-	"strings"
-)
-
-// This should be securely stored, for example, as an environment variable.
-const secret = "p@ssw0rd"
-const repoPath = "/path/to/your/website/repo" // Change this to the actual path of your git repository on the server
-
-func main() {
-	http.HandleFunc("/webhook", handleWebhook)
-	log.Println("Listening for webhooks on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func handleWebhook(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Get the GitHub signature from the header
-	signature := r.Header.Get("X-Hub-Signature-256")
-	if signature == "" {
-		http.Error(w, "Missing signature", http.StatusBadRequest)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusInternalServerError)
-		return
-	}
-	defer r.Body.Close()
-
-	if !isValidSignature(body, signature) {
-		http.Error(w, "Invalid signature", http.StatusUnauthorized)
-		return
-	}
-
-	// Run the deployment script in a separate goroutine to avoid blocking the response
-	go func() {
-		cmd := exec.Command("/bin/sh", "./deploy.sh")
-		cmd.Dir = repoPath
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			log.Printf("Error running deployment script: %s\n%s", err, output)
-			return
-		}
-		log.Printf("Deployment script output:\n%s", output)
-	}()
-
-	fmt.Fprint(w, "Webhook received and processed")
-}
-
-func isValidSignature(body []byte, signature string) bool {
-	// The signature from GitHub comes in the format "sha256=..."
-	// We need to remove the "sha256=" prefix
-	if !strings.HasPrefix(signature, "sha256=") {
-		return false
-	}
-	actualSignature := strings.TrimPrefix(signature, "sha256=")
-
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write(body)
-	expectedMAC := hex.EncodeToString(mac.Sum(nil))
-
-	return hmac.Equal([]byte(actualSignature), []byte(expectedMAC))
-}
+```json
+[
+  {
+    "id": "redeploy-website",
+    "execute-command": "/home/<username>/website/deploy.sh",
+    "command-working-directory": "/home/<username>/website",
+    "response-message": "Deployment initiated.",
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "payload-hmac-sha256",
+            "secret": "abc",
+            "parameter": {
+              "source": "header",
+              "name": "X-Hub-Signature-256"
+            }
+          }
+        },
+        {
+          "match": {
+            "type": "value",
+            "value": "refs/heads/main",
+            "parameter": {
+              "source": "payload",
+              "name": "ref"
+            }
+          }
+        }
+      ]
+    }
+  }
+]
 ```
 
-3. create systemd service file
+## create webhook systemd service
+
+1. create a systemd service to run webhook
+
+```bash
+sudo -e /etc/systemd/system/webhook.service
+```
+
+```ini
+[Unit]
+Description=Webhook
+After=network.target
+
+[Service]
+User=<username>
+Group=<username>
+ExecStart=webhook -hooks /home/<username>/website/hooks.json -verbose
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+2. Start and enable the service
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start webhook.service
+sudo systemctl enable webhook.service
+```
+
+## Create website systemd service
+
+1. create a systemd service to serve the website binary
 
 ```bash
 sudo -e /etc/systemd/system/my-website.service
 ```
-
-Add the following content:
 
 ```ini
 [Unit]
@@ -222,6 +205,8 @@ Description=My Go Website
 After=network.target
 
 [Service]
+User=<username>
+Group=<username>
 WorkingDirectory=/home/<username>/website
 ExecStart=/home/<username>/website/website.o
 Restart=on-failure
@@ -230,7 +215,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-4. Start and enable the service
+2. Start and enable the service
 
 ```bash
 sudo systemctl daemon-reload
@@ -238,40 +223,22 @@ sudo systemctl start my-website.service
 sudo systemctl enable my-website.service
 ```
 
-Make sure build the website binary before start the service.
-
-5. Run the webhook listener
-
-```bash
-go run .
-```
-
-6. Configure Nginx for webhook listener
-
-```bash
-sudo -e /etc/nginx/sites-available/your_domain
-```
-
-Add the following location block inside the server block:
-
-```nginx
-location /webhook {
-    proxy_pass http://localhost:8080; # Port your webhook listener runs on
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-```
-
-7. Test Nginx configuration and restart
-
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
----
+## allow run restart my-website.service without sudo
+
+```bash
+sudo visudo
+```
+
+add this line at the bottom
+
+```
+<username> ALL=NOPASSWD: /usr/bin/systemctl restart my-website
+```
 
 You should be able to access the website now
 
