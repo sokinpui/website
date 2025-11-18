@@ -75,3 +75,24 @@ get the nvidia drivers
 sudo apt update
 sudo ubuntu-drivers autoinstall
 ```
+
+then reboot
+
+```bash
+sudo reboot
+```
+
+# Build neovim from source
+
+```bash
+
+sudo apt update
+sudo apt-get install -y build-essential libssl-dev zlib1g-dev libbz2-dev \
+       libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+       xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git
+
+git clone https://github.com/neovim/neovim.git
+cd neovim
+make CMAKE_BUILD_TYPE=RelWithDebInfo
+sudo make install
+```
