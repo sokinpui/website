@@ -12,7 +12,7 @@ go clean
 echo "Building the Go application..."
 go build -o website.o
 
-echo "Restarting the application..."
+echo "Restarting the application using systemd..."
 sudo systemctl restart my-website
 
 echo "Deployment successful!"
