@@ -1,0 +1,16 @@
+[Unit]
+Description=Webhook
+After=network.target
+
+[Service]
+User=stoplookhere
+Group=stoplookhere
+WorkingDirectory=/home/stoplookhere/website
+ExecStart=/usr/bin/webhook -hooks /home/stoplookhere/website/hooks.json -verbose
+
+# Restart policies
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
