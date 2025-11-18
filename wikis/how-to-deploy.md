@@ -46,7 +46,7 @@ sudo systemctl enable nginx
 2. Configure Nginx
 
 ```bash
-vim /etc/nginx/sites-available/your_domain
+sudo -e /etc/nginx/sites-available/your_domain
 ```
 
 Add the following configuration:
@@ -249,7 +249,7 @@ go run .
 6. Configure Nginx for webhook listener
 
 ```bash
-vim /etc/nginx/sites-available/your_domain
+sudo -e /etc/nginx/sites-available/your_domain
 ```
 
 Add the following location block inside the server block:
