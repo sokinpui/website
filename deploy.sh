@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 echo "Pulling latest changes..."
 git reset --hard origin/main
 git pull origin main
