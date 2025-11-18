@@ -291,3 +291,16 @@ Restart the website:
 cd ~/website
 ./deploy.sh
 ```
+
+## clear cluodflare cache
+
+sometimes after deploy the website, the old cache is still there. You can clear the Cloudflare cache by following these steps:
+
+1. Log in to Cloudflare: Go to the Cloudflare dashboard https://dash.cloudflare.com and log in to your account.
+2. Select Your Website: On the dashboard home, click on the domain name you want to manage (e.g., xrayxrtas.space ).
+3. Navigate to Caching: In the left-hand sidebar, find and click on the Caching icon (it looks like a cylinder or database).
+4. Go to Configuration: Within the Caching section, make sure you are on the Configuration tab.
+5. Purge Everything: You will see a section called "Purge Cache". For your situation, the simplest and most effective option is to
+   purge everything.
+   • Click the "Purge Everything" button.
+   • A confirmation dialog will appear. Confirm that you want to purge the entire cache.
