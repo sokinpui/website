@@ -60,7 +60,7 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 sudo systemctl start docker || sudo systemctl restart docker
 ```
 
-```
+```bash
 sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
@@ -86,7 +86,6 @@ sudo reboot
 # Build neovim from source
 
 ```bash
-
 sudo apt update
 sudo apt install cmake
 
