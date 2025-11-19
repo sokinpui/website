@@ -298,7 +298,7 @@ func (s *server) handleContent(contentFS embed.FS, contentType string) http.Hand
 			goldmark.WithParserOptions(
 				parser.WithAutoHeadingID(),
 				parser.WithASTTransformers(
-					util.Prioritized(&linkTransformer{}, 100),
+					util.Prioritized(&linkTransformer{contentType: contentType}, 100),
 					util.Prioritized(&tocExtractor{Headings: &headings}, 200),
 				),
 			),
@@ -414,6 +414,7 @@ func (t *tocExtractor) Transform(node *ast.Document, reader text.Reader, pc pars
 }
 
 type linkTransformer struct {
+	contentType string
 }
 
 func (t *linkTransformer) Transform(node *ast.Document, reader text.Reader, pc parser.Context) {
@@ -425,16 +426,21 @@ func (t *linkTransformer) Transform(node *ast.Document, reader text.Reader, pc p
 		switch v := n.(type) {
 		case *ast.Link:
 			dest := string(v.Destination)
-			if strings.HasSuffix(dest, ".md") && !strings.HasPrefix(dest, "http") {
-				if strings.Contains(dest, "wikis/") {
-					base := path.Base(dest)
-					fileName := strings.TrimSuffix(base, ".md")
-					v.Destination = []byte("/wiki/" + fileName)
-				} else if strings.Contains(dest, "blogs/") {
-					base := path.Base(dest)
-					fileName := strings.TrimSuffix(base, ".md")
-					v.Destination = []byte("/blog/" + fileName)
-				}
+			if !strings.HasSuffix(dest, ".md") || strings.HasPrefix(dest, "http") {
+				return ast.WalkContinue, nil
+			}
+
+			base := path.Base(dest)
+			fileName := strings.TrimSuffix(base, ".md")
+
+			if strings.Contains(dest, "wikis/") {
+				v.Destination = []byte("/wiki/" + fileName)
+			} else if strings.Contains(dest, "blogs/") {
+				v.Destination = []byte("/blog/" + fileName)
+			} else if t.contentType == "blogs" {
+				v.Destination = []byte("/blog/" + fileName)
+			} else if t.contentType == "wikis" {
+				v.Destination = []byte("/wiki/" + fileName)
 			}
 		case *ast.Image:
 			dest := string(v.Destination)
