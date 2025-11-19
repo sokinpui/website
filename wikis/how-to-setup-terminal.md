@@ -94,4 +94,18 @@ git clone https://github.com/neovim/neovim.git
 cd neovim
 make CMAKE_BUILD_TYPE=RelWithDebInfo
 sudo make install
+sudo apt remove neovim
+```
+
+## Setup neovim plugin
+
+install `nodejs` and `npm`
+refer to https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+\. "$HOME/.nvm/nvm.sh"
+nvm install 24
+node -v
+npm -v
 ```
