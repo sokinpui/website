@@ -4,6 +4,8 @@ desc: Documentation for deploying this website
 createdAt: "2025-11-15T10:00:00Z"
 ---
 
+You can [setup zsh](./how-to-setup-terminal.md) first.
+
 Guide for setup this website:
 
 - build website binary
