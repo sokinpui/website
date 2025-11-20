@@ -62,9 +62,6 @@ Enable the site and test Nginx configuration:
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/grpc.skpstack.uk /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl daemon-reload
-sudo systemctl restart nginx
 ```
 
 Get the SSL Certificate:
@@ -73,7 +70,13 @@ Get the SSL Certificate:
 sudo certbot --nginx -d grpc.skpstack.uk
 ```
 
+```bash
+sudo nginx -t
+sudo systemctl daemon-reload
+sudo systemctl restart nginx
+```
+
 ---
 
 1. Start your gRPC server on port 50051 or the port you specified in the Nginx config.
-2. You can now access your gRPC server via `grpc.skpstack.uk`.
+2. You can now access your gRPC server via `grpc.skpstack.uk:443`.
