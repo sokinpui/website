@@ -1,5 +1,5 @@
 ---
-title: "How to setup synapse grpc server on vps"
+title: "How to setup grpc server on vps"
 desc: ""
 createdAt: "2025-11-20T06:52:01Z"
 ---
@@ -33,29 +33,27 @@ Add the following configuration:
 ```nginx
 server {
     server_name grpc.skpstack.uk;
+    # or
     # server_name <your-domain>;
 
-    # Log files for debugging
     access_log /var/log/nginx/grpc_access.log;
     error_log /var/log/nginx/grpc_error.log;
 
-    # 1. Route Synapse gRPC traffic
     # The location matches the "package.Service" name from your .proto file
-    location /protos.Generate/ {
+    location /package.Service/ {
         grpc_pass grpc://localhost:50051;
+        # or
+        # grpc_pass grpc://<ip>:<port>;
 
-        # Standard gRPC headers
         grpc_set_header Host $host;
         grpc_set_header X-Real-IP $remote_addr;
         grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
-    # 2. (Optional) Return 404 for anything that isn't your gRPC service
     location / {
         return 404;
     }
 
-    # SSL configuration will be added by Certbot automatically below
     listen 80 http2;
 }
 ```
@@ -74,3 +72,8 @@ Get the SSL Certificate:
 ```bash
 sudo certbot --nginx -d grpc.skpstack.uk
 ```
+
+---
+
+1. Start your gRPC server on port 50051 or the port you specified in the Nginx config.
+2. You can now access your gRPC server via `grpc.skpstack.uk`.
