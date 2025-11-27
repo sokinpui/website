@@ -45,6 +45,11 @@ server {
         # or
         # grpc_pass grpc://<ip>:<port>;
 
+        # increase timeouts if needed
+        #grpc_read_timeout 600s;
+        #grpc_send_timeout 600s;
+        #grpc_connect_timeout 60s;
+
         grpc_set_header Host $host;
         grpc_set_header X-Real-IP $remote_addr;
         grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
