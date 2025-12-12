@@ -72,7 +72,7 @@ sudo systemctl enable nginx
 2. Configure Nginx
 
 ```bash
-sudo -e /etc/nginx/sites-available/your_domain
+sudo -e /etc/nginx/sites-available/www.skpstack.uk
 ```
 
 Add the following configuration:
@@ -80,7 +80,7 @@ Add the following configuration:
 ```nginx
 server {
   listen 80;
-    server_name your_domain;
+    server_name www.skpstack.uk;
 
   location / {
     proxy_pass http://localhost:12352;
@@ -95,7 +95,7 @@ server {
 3. Enable the server block
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/your_domain /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/www.skpstack.uk /etc/nginx/sites-enabled/
 ```
 
 4. Test Nginx configuration and restart
@@ -247,6 +247,21 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 sudo systemctl start my-website.service
 sudo systemctl enable my-website.service
+```
+
+add Webhook to nginx config:
+
+```bash
+sudo -e /etc/nginx/sites-available/www.skpstack.uk
+```
+
+```bash
+location /hooks/ {
+    proxy_pass http://127.0.0.1:9000/hooks/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
 ```
 
 ```bash
