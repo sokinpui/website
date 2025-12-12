@@ -12,6 +12,15 @@ run this script:
 wget -O- https://raw.githubusercontent.com/sokinpui/terminal_dotfiles/refs/heads/main/zsh/setup | bash
 ```
 
+if you have locale issue, run this command:
+
+```
+sudo apt update && sudo apt install -y language-pack-en
+sudo locale-gen en_US.UTF-8
+sudo update-locale LANG=en_US.UTF-8
+source /etc/default/locale
+```
+
 It should install:
 
 - zsh

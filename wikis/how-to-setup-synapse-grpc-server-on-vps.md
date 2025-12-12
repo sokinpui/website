@@ -40,7 +40,7 @@ server {
     error_log /var/log/nginx/grpc_error.log;
 
     # The location matches the "package.Service" name from your .proto file
-    location /package.Service/ {
+    location /synapse.Generate/ {
         grpc_pass grpc://localhost:50051;
         # or
         # grpc_pass grpc://<ip>:<port>;
@@ -59,7 +59,7 @@ server {
         return 404;
     }
 
-    listen 80 http2;
+    listen 80;
 }
 ```
 
@@ -73,6 +73,18 @@ Get the SSL Certificate:
 
 ```bash
 sudo certbot --nginx -d grpc.skpstack.uk
+```
+
+```bash
+sudo nginx -t
+sudo systemctl daemon-reload
+sudo systemctl restart nginx
+```
+
+Correct this line after certbot:
+
+```nginx
+listen 443 ssl http2;
 ```
 
 ```bash
