@@ -26,6 +26,7 @@ Guide for setup this website:
 3. Add two record with your domain name pointing to your VPS IP address
 
 - Type: A
+
   - Name: @
   - IPv4 address: your VPS IP address
   - TTL: Auto
@@ -147,6 +148,10 @@ sudo apt install git webhook
 ```
 
 modify `hooks.json` file in `website` directory:
+
+```
+sed -i "s|<username>|$USER|g" hooks.json
+```
 
 example:
 
