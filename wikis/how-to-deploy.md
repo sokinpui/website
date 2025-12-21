@@ -151,6 +151,10 @@ modify `hooks.json` file in `website` directory:
 
 ```
 sed -i "s|<username>|$USER|g" hooks.json
+git config --global user.name "tmp"
+git config --global user.email "tmp@tmp.tmp"
+git add .
+git commit -m "update username in hooks.json"
 ```
 
 example:
