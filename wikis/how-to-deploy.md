@@ -157,43 +157,6 @@ git add .
 git commit -m "update username in hooks.json"
 ```
 
-example:
-
-```json
-[
-  {
-    "id": "redeploy-website",
-    "execute-command": "/home/<username>/website/deploy.sh",
-    "command-working-directory": "/home/<username>/website",
-    "response-message": "Deployment initiated.",
-    "trigger-rule": {
-      "and": [
-        {
-          "match": {
-            "type": "payload-hmac-sha256",
-            "secret": "abc",
-            "parameter": {
-              "source": "header",
-              "name": "X-Hub-Signature-256"
-            }
-          }
-        },
-        {
-          "match": {
-            "type": "value",
-            "value": "refs/heads/main",
-            "parameter": {
-              "source": "payload",
-              "name": "ref"
-            }
-          }
-        }
-      ]
-    }
-  }
-]
-```
-
 ## create webhook systemd service
 
 1. create a systemd service to run webhook
