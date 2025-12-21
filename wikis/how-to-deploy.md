@@ -195,7 +195,7 @@ example:
 1. create a systemd service to run webhook
 
 ```bash
-sudo -e /etc/systemd/system/webhook.service
+sudo -e /etc/systemd/system/webhook@.service
 ```
 
 ```ini
@@ -227,7 +227,7 @@ sudo systemctl enable webhook@$USER.service
 1. create a systemd service to serve the website binary
 
 ```bash
-sudo -e /etc/systemd/system/my-website.service
+sudo -e /etc/systemd/system/my-website@.service
 ```
 
 ```ini
