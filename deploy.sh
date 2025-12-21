@@ -1,10 +1,11 @@
 #!/bin/bash
 
 echo "resetting local changes..."
-git reset --hard origin/main
+git reset --hard
 
 echo "Pulling latest changes..."
 git pull origin main
+git rebase
 
 echo "Cleaning previous builds..."
 go clean
