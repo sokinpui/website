@@ -204,9 +204,9 @@ Description=Webhook
 After=network.target
 
 [Service]
-User=<username>
-Group=<username>
-ExecStart=webhook -hooks /home/<username>/website/hooks.json -verbose
+User=%i
+Group=%i
+ExecStart=webhook -hooks /home/%i/website/hooks.json -verbose
 Restart=always
 RestartSec=10
 
@@ -218,8 +218,8 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl start webhook.service
-sudo systemctl enable webhook.service
+sudo systemctl start webhook@$USER.service
+sudo systemctl enable webhook@$USER.service
 ```
 
 ## Create website systemd service
@@ -236,10 +236,10 @@ Description=My Go Website
 After=network.target
 
 [Service]
-User=<username>
-Group=<username>
-WorkingDirectory=/home/<username>/website
-ExecStart=/home/<username>/website/website.o
+User=%i
+Group=%i
+WorkingDirectory=/home/%i/website
+ExecStart=/home/%i/website/website.o
 Restart=on-failure
 
 [Install]
@@ -250,8 +250,8 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl start my-website.service
-sudo systemctl enable my-website.service
+sudo systemctl start my-website@$USER.service
+sudo systemctl enable my-website@$USER.service
 ```
 
 add Webhook to nginx config:
