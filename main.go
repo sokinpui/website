@@ -398,7 +398,14 @@ func (t *linkTransformer) Transform(node *ast.Document, reader text.Reader, pc p
 		switch v := n.(type) {
 		case *ast.Link:
 			dest := string(v.Destination)
-			if !strings.HasSuffix(dest, ".md") || strings.HasPrefix(dest, "http") {
+
+			if strings.HasPrefix(dest, "http") {
+				v.SetAttributeString("target", []byte("_blank"))
+				v.SetAttributeString("rel", []byte("noopener noreferrer"))
+				return ast.WalkContinue, nil
+			}
+
+			if !strings.HasSuffix(dest, ".md") {
 				return ast.WalkContinue, nil
 			}
 
