@@ -93,6 +93,14 @@ sudo systemctl daemon-reload
 sudo systemctl restart nginx
 ```
 
+# download synapse:
+
+```bash
+git clone https://github.com/sokinpui/synapse.go.git
+sudo apt update
+sudo apt install protobuf-compiler libprotobuf-dev
+```
+
 ---
 
 1. Start your gRPC server on port 50051 or the port you specified in the Nginx config.
