@@ -4,6 +4,8 @@ desc: ""
 createdAt: "2025-12-23T11:34:21Z"
 ---
 
+The plugin we use for self-hosted sync for obsidian: [https://github.com/vrtmrz/obsidian-livesync](https://github.com/vrtmrz/obsidian-livesync)
+
 Here is a summary guide to setting up the **Obsidian Self-hosted LiveSync** plugin on a Synology NAS.
 
 ---
