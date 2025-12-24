@@ -8,17 +8,17 @@ Here is a summary guide to setting up the **Obsidian Self-hosted LiveSync** plug
 
 ---
 
-### **Setup Guide for Synology NAS**
+# **Setup Guide for Synology NAS**
 
 **Prerequisite:** Install **Container Manager** (formerly Docker) from the Synology Package Center.
 
-#### **Step 1: File System Setup**
+## **Step 1: File System Setup**
 
 1.  Open **File Station** on your Synology.
 2.  Navigate to your `docker` share.
 3.  Create a new folder named `obsidian-livesync`.
 
-#### **Step 2: Create the Container (Docker Compose)**
+## **Step 2: Create the Container (Docker Compose)**
 
 1.  Open **Container Manager**.
 2.  Go to the **Project** tab and click **Create**.
@@ -48,7 +48,7 @@ _Tip: Change `admin_user` and `strong_password` to your preferred credentials._
 
 7.  Click **Next** and finish the wizard to start the container.
 
-#### **Step 3: Initialize the Database**
+## **Step 3: Initialize the Database**
 
 Because CouchDB starts empty, you must create the database and configure it. The easiest way is via the web interface (Fauxton).
 
@@ -60,7 +60,7 @@ Because CouchDB starts empty, you must create the database and configure it. The
 
 _Optional but Recommended:_ You may need to enable CORS if you have trouble connecting from devices. In the CouchDB UI, go to **Configuration** -> **CORS** and enable it for all domains (`*`) or your specific device IPs.
 
-#### **Step 4: Configure Obsidian Plugin**
+## **Step 4: Configure Obsidian Plugin**
 
 1.  In Obsidian, install the **Self-hosted LiveSync** plugin (Community Plugins).
 2.  Go to **Settings > Self-hosted LiveSync**.
@@ -73,7 +73,7 @@ _Optional but Recommended:_ You may need to enable CORS if you have trouble conn
 9.  Click **Apply Settings**.
 10. use `live-sync` sync mode
 
-#### **Step 5: Syncing Other Devices**
+## **Step 5: Syncing Other Devices**
 
 Once the first device is set up:
 
