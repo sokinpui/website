@@ -26,9 +26,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed blogs
-var blogFS embed.FS
-
 //go:embed wikis
 var wikiFS embed.FS
 
@@ -44,7 +41,6 @@ var templateFS embed.FS
 type ViewData struct {
 	Title       string
 	Content     template.HTML
-	Blogs       []ContentItem
 	Wikis       []ContentItem
 	TOC         []Heading
 	Description string
@@ -133,11 +129,9 @@ func (s *server) routes() *http.ServeMux {
 	assetsServer := http.FileServer(http.FS(assetsFS))
 	mux.Handle("/assets/", assetsServer)
 
-	mux.HandleFunc("/", s.handleIndex)
-	mux.HandleFunc("/blog", s.handleList(blogFS, "blogs", "blogs"))
-	mux.HandleFunc("/wiki", s.handleList(wikiFS, "wikis", "wikis"))
-	mux.HandleFunc("/blog/", s.handleContent(blogFS, "blogs"))
+	mux.HandleFunc("/", s.handleWikiList)
 	mux.HandleFunc("/wiki/", s.handleContent(wikiFS, "wikis"))
+	mux.HandleFunc("/wiki", func(w http.ResponseWriter, r *http.Request) { http.Redirect(w, r, "/", http.StatusMovedPermanently) })
 
 	return mux
 }
@@ -149,7 +143,6 @@ func (s *server) handleStatic() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		matches := hashPattern.FindStringSubmatch(r.URL.Path)
 		if len(matches) == 3 {
-			// It's a hashed file, rewrite the URL to the original
 			originalPath := matches[1] + matches[2]
 			r.URL.Path = originalPath
 		}
@@ -179,51 +172,30 @@ func main() {
 	}
 }
 
-func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
+func (s *server) handleWikiList(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
 
+	items, err := listContentItems(wikiFS, "wikis")
+	if err != nil {
+		http.Error(w, "Failed to list wikis", http.StatusInternalServerError)
+		return
+	}
+
 	data := ViewData{
-		Title: "Home page",
+		Title: "Wikis",
+		Wikis: items,
 	}
 
 	templateName := "layout"
 	if r.Header.Get("HX-Request") == "true" {
-		templateName = "home"
+		templateName = "index"
 	}
 
 	if err := s.templates.ExecuteTemplate(w, templateName, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-func (s *server) handleList(fsys embed.FS, dir string, listType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		items, err := listContentItems(fsys, dir)
-		if err != nil {
-			http.Error(w, "Failed to list files", http.StatusInternalServerError)
-			return
-		}
-
-		data := ViewData{}
-		if listType == "blogs" {
-			data.Title = "Blogs"
-			data.Blogs = items
-		} else {
-			data.Title = "Wikis"
-			data.Wikis = items
-		}
-
-		templateName := "layout"
-		if r.Header.Get("HX-Request") == "true" {
-			templateName = "index"
-		}
-
-		if err := s.templates.ExecuteTemplate(w, templateName, data); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
 	}
 }
 
@@ -433,13 +405,7 @@ func (t *linkTransformer) Transform(node *ast.Document, reader text.Reader, pc p
 			base := path.Base(dest)
 			fileName := strings.TrimSuffix(base, ".md")
 
-			if strings.Contains(dest, "wikis/") {
-				v.Destination = []byte("/wiki/" + fileName)
-			} else if strings.Contains(dest, "blogs/") {
-				v.Destination = []byte("/blog/" + fileName)
-			} else if t.contentType == "blogs" {
-				v.Destination = []byte("/blog/" + fileName)
-			} else if t.contentType == "wikis" {
+			if strings.Contains(dest, "wikis/") || t.contentType == "wikis" {
 				v.Destination = []byte("/wiki/" + fileName)
 			}
 		case *ast.Image:

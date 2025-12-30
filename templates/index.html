@@ -1,17 +1,5 @@
 {{ define "index" }}
 <div class="readable-width-wrapper">
-{{ if .Blogs }}
-<div class="content-list">
-    <h2>Blogs</h2>
-    <ul>
-        {{ range .Blogs }}
-        <li><a href="/blog/{{.FileName}}" hx-get="/blog/{{.FileName}}" hx-target="#content" hx-push-url="true">{{ .Title }}</a></li>
-        {{ else }}
-        <li>No blog posts yet.</li>
-        {{ end }}
-    </ul>
-</div>
-{{ end }}
 {{ if .Wikis }}
 <div class="content-list">
     <h2>Wikis</h2>

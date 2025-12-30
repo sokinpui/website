@@ -11,15 +11,15 @@ import (
 
 func main() {
 	if len(os.Args) < 3 {
-		fmt.Fprintln(os.Stderr, "Usage: go run cli/main.go <type> <title>")
+		fmt.Fprintln(os.Stderr, "Usage: go run cli/main.go wiki <title>")
 		os.Exit(1)
 	}
 
 	contentType := os.Args[1]
 	title := os.Args[2]
 
-	if contentType != "blog" && contentType != "wiki" {
-		fmt.Fprintln(os.Stderr, "Invalid type. Must be 'blog' or 'wiki'.")
+	if contentType != "wiki" {
+		fmt.Fprintln(os.Stderr, "Invalid type. Must be 'wiki'.")
 		os.Exit(1)
 	}
 
