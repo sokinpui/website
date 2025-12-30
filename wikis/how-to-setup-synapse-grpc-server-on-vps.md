@@ -1,12 +1,12 @@
 ---
-title: "How to setup grpc server on vps"
+title: "How to setup synapse server on vps"
 desc: ""
 createdAt: "2025-11-20T06:52:01Z"
 ---
 
 Assume you use Cloudflare for proxying your domain.
 
-For this guide, the domain is `grpc.skpstack.uk`
+For this guide, the domain is `synapse.skpstack.uk`
 
 # Enable gRPC support in Cloudflare
 
@@ -18,7 +18,7 @@ For this guide, the domain is `grpc.skpstack.uk`
 # Config Nginx
 
 ```bash
-sudo -e /etc/nginx/sites-available/grpc.skpstack.uk
+sudo -e /etc/nginx/sites-available/synapse.skpstack.uk
 
 ```
 
@@ -32,56 +32,71 @@ Add the following configuration:
 
 ```nginx
 server {
-    server_name grpc.skpstack.uk;
-    # or
-    # server_name <your-domain>;
+    listen 80 http2; # 'http2' is required for the gRPC location
+    server_name synapse.skpstack.uk;
 
-    access_log /var/log/nginx/grpc_access.log;
-    error_log /var/log/nginx/grpc_error.log;
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
 
-    # The location matches the "package.Service" name from your .proto file
+    # --- 1. gRPC Service (Port 50051) ---
     location /synapse.Generate/ {
         grpc_pass grpc://localhost:50051;
-        # or
-        # grpc_pass grpc://<ip>:<port>;
-
-        # increase timeouts if needed
-        #grpc_read_timeout 600s;
-        #grpc_send_timeout 600s;
-        #grpc_connect_timeout 60s;
 
         grpc_set_header Host $host;
         grpc_set_header X-Real-IP $remote_addr;
         grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # Optional: Increase timeouts if gRPC calls are long
+        # grpc_read_timeout 600s;
     }
 
+    # --- 2. HTTP & SSE Service (Port 8080) ---
     location / {
-        return 404;
-    }
+        proxy_pass http://localhost:8080;
 
-    listen 80;
+        # --- SSE & Streaming Requirements ---
+
+        # 1. Use HTTP 1.1 (Required for keep-alive connections)
+        proxy_http_version 1.1;
+
+        # 2. Clear the Connection header to ensure keep-alive works
+        proxy_set_header Connection "";
+
+        # 3. Disable Buffering (CRITICAL for SSE)
+        # If this is 'on', Nginx waits to fill a buffer before sending data to client,
+        # breaking the real-time stream.
+        proxy_buffering off;
+
+        # 4. Disable Caching
+        proxy_cache off;
+
+        # 5. Increase Read Timeout
+        # SSE connections stay open for a long time. Default is 60s.
+        # Set this higher than your application's keep-alive/heartbeat interval.
+        proxy_read_timeout 24h;
+
+        # --- Standard Proxy Headers ---
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 }
 ```
 
 Enable the site and test Nginx configuration:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/grpc.skpstack.uk /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/synapse.skpstack.uk /etc/nginx/sites-enabled/
 ```
 
 Get the SSL Certificate:
 
 ```bash
-sudo certbot --nginx -d grpc.skpstack.uk
+sudo certbot --nginx -d synapse.skpstack.uk
 ```
 
-```bash
-sudo nginx -t
-sudo systemctl daemon-reload
-sudo systemctl restart nginx
-```
-
-Correct this line after certbot:
+**Correct this line after certbot:**
 
 ```nginx
 listen 443 ssl http2;
@@ -104,4 +119,4 @@ sudo apt install protobuf-compiler libprotobuf-dev
 ---
 
 1. Start your gRPC server on port 50051 or the port you specified in the Nginx config.
-2. You can now access your gRPC server via `grpc.skpstack.uk:443`.
+2. You can now access your gRPC server via `synapse.skpstack.uk:443`.
