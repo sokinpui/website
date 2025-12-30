@@ -108,7 +108,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart nginx
 ```
 
-# download synapse:
+# Download synapse:
 
 ```bash
 git clone https://github.com/sokinpui/synapse.go.git
