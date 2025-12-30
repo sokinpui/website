@@ -1,5 +1,5 @@
 ---
-title: How to deploy the website
+title: How to deploy this website
 desc: Documentation for deploying this website
 createdAt: "2025-11-15T10:00:00Z"
 ---
@@ -26,7 +26,6 @@ Guide for setup this website:
 3. Add two record with your domain name pointing to your VPS IP address
 
 - Type: A
-
   - Name: @
   - IPv4 address: your VPS IP address
   - TTL: Auto

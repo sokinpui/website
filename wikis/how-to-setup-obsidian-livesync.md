@@ -1,5 +1,5 @@
 ---
-title: "how-to-setup-obsidian-livesync"
+title: "how to setup obsidian livesync"
 desc: ""
 createdAt: "2025-12-23T11:34:21Z"
 ---

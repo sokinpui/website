@@ -1,5 +1,5 @@
 ---
-title: "setup-vpn-with-3x-ui"
+title: "setup vpn with 3x-ui"
 desc: ""
 createdAt: "2025-12-21T14:33:44Z"
 ---
