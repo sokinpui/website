@@ -120,3 +120,5 @@ sudo apt install protobuf-compiler libprotobuf-dev
 
 1. Start your gRPC server on port 50051 or the port you specified in the Nginx config.
 2. You can now access your gRPC server via `synapse.skpstack.uk:443`.
+
+Link to repo: [https://github.com/sokinpui/synapse.go.git](https://github.com/sokinpui/synapse.go.git)
